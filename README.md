@@ -9,10 +9,10 @@
 - MongoDB - Mongoose
 - Bcrypt
 
-
 ## Git Commands
+
 ```bash
-    git status #check if any files are modified and ready to be pushed
+    git status # check if any files are modified and ready to be pushed
 ```
 
 ```bash
@@ -21,9 +21,13 @@
 ```
 
 ```bash
-    git commit -m "commit message"
+    git commit -m "commit message" # commit message
 ```
 
 ```bash
-    git push
+    git push # push changes to remote
+```
+
+```bash
+    git pull # get changes from remote
 ```
