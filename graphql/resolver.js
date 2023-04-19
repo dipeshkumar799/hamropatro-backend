@@ -8,7 +8,7 @@ import { Types } from "mongoose"; //to define id in mongoose like (_id: new Type
 const resolvers = {
   Query: {
     users: async (_, { id }) => {
-      const user = await User.findById(id);
+      const user = await User.findById(id); //findById means to find data bassess of id
       console.log(user);
 
       if (!user) {
@@ -18,11 +18,11 @@ const resolvers = {
         throw new Error("user is not logged in please loged in");
       }
 
-      return User.find();
+      return User.find(); //find() use for to return whole Data
     },
 
     user: async (_, { id }) => {
-      const user = await User.findOne({ id });
+      const user = await User.findOne({ id }); //findOne means to find data  in the  basess of  any propertiies(like id,email);
       console.log(user);
 
       if (!user) {
@@ -37,7 +37,10 @@ const resolvers = {
     upDatemanyData: async (_, { id }) => {
       const user = await User.updateMany(
         { _id: new Types.ObjectId(id) },
-        { firstName: "dineshads", lastName: "ydas" }
+        {
+          firstName: "skdzxclf",
+          lastName: "jdkzcxsa",
+        }
       );
       console.log(user);
       return user;
@@ -69,6 +72,7 @@ const resolvers = {
         lastName,
         isLoggedIn: true,
       });
+
       return await userInstance.save();
     },
 
@@ -91,6 +95,7 @@ const resolvers = {
       user.isLoggedIn = true;
 
       const userUpDate = await user.save();
+      console.log(userUpDate);
       userUpDate.password = null;
       return userUpDate;
     },
