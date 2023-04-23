@@ -3,7 +3,7 @@ import cheerio from "cheerio";
 import dayjs from "dayjs";
 
 const msTime = dayjs().valueOf();
-console.log(msTime);
+
 const scrapeWebsite = async () => {
   try {
     const url = "https://www.hamropatro.com/gold";

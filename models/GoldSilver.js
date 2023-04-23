@@ -1,8 +1,9 @@
 import { Schema, model } from "mongoose";
+import dayjs from "dayjs";
 const GoldSilverSchema = new Schema({
   createdAt: {
-    type: Date,
-    default: Date.now,
+    type: Number,
+    default: dayjs().valueOf(),
     required: true,
   },
   goldHallmarkGram: {
