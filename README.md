@@ -10,6 +10,7 @@
 - Bcrypt
   -mailtrap
   -nodemailer
+  -axios
 
 ## Git Commands
 

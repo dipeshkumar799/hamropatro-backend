@@ -23,7 +23,9 @@ const UserSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  otp: Number,
+  otp: {
+    type: Number,
+  },
 });
 
 const User = model("User", UserSchema);

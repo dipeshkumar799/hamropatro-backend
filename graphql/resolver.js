@@ -1,10 +1,12 @@
 import bcrypt from "bcrypt"; //to hash the password
 import User from "../models/User.js";
 import newOTP from "otp-generators";
-import sendEmail from "../email.js";
-import connectDB from "../db.js";
-
+import sendEmail from "../utils/email.js";
+import connectDB from "../utils/db.js";
+import getForex from "../forex/forex.js";
 import { Types } from "mongoose"; //to define id in mongoose like (_id: new Types.ObjectId(id))
+import scrapeWebsite from "../utils/golldsilver.js";
+import GoldSilver from "../models/GoldSilver.js";
 connectDB();
 // Call the connectDB function to connect to MongoDB
 
@@ -35,6 +37,26 @@ const resolvers = {
         throw new Error("User is not loggedin please login");
       }
       return user;
+    },
+
+    getForexs: async () => {
+      const getForexh = await getForex();
+      return getForexh;
+    },
+
+    goldSilver: async () => {
+      const goldSilvers = await scrapeWebsite();
+      const newGoldSilver = await GoldSilver.create({
+        goldHallmarkTola: goldSilvers.goldHallmarkTolaPrice,
+        goldTejabitola: goldSilvers.goldTejabiTolaPrice,
+        silvertola: goldSilvers.silverTolaPrice,
+        goldHallmarkGram: goldSilvers.goldHallmarkGramPrice,
+        goldTejabiGram: goldSilvers.goldTejabiGramPrice,
+        silverGram: goldSilvers.silverGramPrice,
+      });
+      await newGoldSilver.save();
+      const goldSilverList = await GoldSilver.find();
+      return goldSilverList;
     },
   },
 
@@ -201,4 +223,5 @@ const resolvers = {
     },
   },
 };
+
 export default resolvers;

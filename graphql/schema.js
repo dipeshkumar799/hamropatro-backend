@@ -5,6 +5,8 @@ const typeDefs = gql`
     users(id: String!): [User]
     user(firstName: String!): User!
     valid(id: String!): User!
+    getForexs: [Forex!]!
+    goldSilver: [GoldSilver!]
   }
 
   type User {
@@ -14,6 +16,26 @@ const typeDefs = gql`
     id: String!
     isLoggedIn: Boolean!
   }
+  type Currency {
+    unit: Int!
+    name: String!
+    iso3: String!
+  }
+
+  type Forex {
+    currency: Currency!
+    buy: Float!
+    sell: Float!
+  }
+  type GoldSilver {
+    goldHallmarkGram: String!
+    goldTejabiGram: String
+    silverGram: String!
+    goldHallmarkTola: String!
+    goldTejabitola: String!
+    silvertola: String!
+  }
+
   type Mutation {
     signUp(
       firstName: String!
