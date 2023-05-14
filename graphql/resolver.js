@@ -7,6 +7,10 @@ import getForex from "../forex/forex.js";
 import { Types } from "mongoose"; //to define id in mongoose like (_id: new Types.ObjectId(id))
 import scrapeWebsite from "../utils/golldsilver.js";
 import GoldSilver from "../models/GoldSilver.js";
+import Chat from "../models/Chat.js";
+import { PubSub } from "graphql-subscriptions";
+import Conversation from "../models/Conversation.js";
+const pubsub = new PubSub();
 connectDB();
 // Call the connectDB function to connect to MongoDB
 
@@ -40,8 +44,8 @@ const resolvers = {
     },
 
     getForexs: async () => {
-      const getForexh = await getForex();
-      return getForexh;
+      const getForexData = await getForex();
+      return getForexData;
     },
 
     goldSilver: async () => {
@@ -57,6 +61,13 @@ const resolvers = {
       await newGoldSilver.save();
       const goldSilverList = await GoldSilver.find();
       return goldSilverList;
+    },
+
+    conversations: async (_, { conversationId }) => {
+      const conversation = await Conversation.findById({
+        id: conversationId,
+      }).exec();
+      return conversation.messages;
     },
   },
 
@@ -220,6 +231,43 @@ const resolvers = {
       const deleteUser = await User.deleteOne({ _id: new Types.ObjectId(id) });
       console.log(deleteUser);
       return `User ${user.firstName} ${user.lastName} deleted successfully`;
+    },
+    sendMessage: async (
+      _,
+      { senderId, recipientId, content, conversationId }
+    ) => {
+      const conversation = await Conversation.findById(conversationId);
+      console.log(conversation);
+      if (!conversation) {
+        throw new Error("Conversation must exist");
+      }
+      const chatInstance = await Chat.create({
+        content,
+        senderId,
+        recipientId,
+        conversation,
+        createdAt: new Date().toISOString(),
+      });
+      const chat = await chatInstance.save();
+      pubsub.publish(`NEW_MESSAGE_${recipientId}`, { newMessage: chat });
+      return chat;
+    },
+
+    createConversation: async (_, { participantIds }) => {
+      const conversationInstance = await Conversation.create({
+        participants: participantIds,
+        messages: [],
+      });
+      const conversation = await conversationInstance.save();
+      return conversation;
+    },
+  },
+
+  Subscription: {
+    newMessage: {
+      subscribe: (_, { recipientId }) => {
+        return pubsub.asyncIterator(`NEW_MESSAGE_${recipientId}`);
+      },
     },
   },
 };

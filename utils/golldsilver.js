@@ -1,4 +1,6 @@
+//scrap of goldsilvers
 import axios from "axios";
+
 import cheerio from "cheerio";
 import dayjs from "dayjs";
 
@@ -41,5 +43,3 @@ const scrapeWebsite = async () => {
 
 scrapeWebsite();
 export default scrapeWebsite;
-
-// dayjs().valueOf()

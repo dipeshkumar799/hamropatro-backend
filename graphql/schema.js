@@ -1,11 +1,24 @@
 import { gql } from "apollo-server";
-
 const typeDefs = gql`
+  type Message {
+    id: ID!
+    content: String!
+    senderId: ID!
+    recipientId: ID!
+    createdAt: String!
+  }
+
+  type Conversation {
+    id: ID!
+    participantIds: [ID!]!
+    messages: [Message!]!
+  }
   type Query {
     users(id: String!): [User]
     user(firstName: String!): User!
     valid(id: String!): User!
     getForexs: [Forex!]!
+    conversations(userId: ID!): [Conversation!]!
     goldSilver: [GoldSilver!]
   }
 
@@ -27,6 +40,7 @@ const typeDefs = gql`
     buy: Float!
     sell: Float!
   }
+
   type GoldSilver {
     goldHallmarkGram: String!
     goldTejabiGram: String
@@ -42,16 +56,19 @@ const typeDefs = gql`
       lastName: String!
       email: String!
       password: String!
-    ): User
-
+    ): User!
+    sendMessage(
+      senderId: ID!
+      recipientId: ID!
+      content: String!
+      conversationID: ID!
+    ): Message!
+    createConversation(participantIds: [ID!]!): Conversation!
     verifyOtp(otp: Int!, email: String!): User!
     update(id: String!, firstName: String!, lastName: String!): User!
     deleteData(id: String!): User!
-    login(
-      email: String!
+    login(email: String!, password: String!): User
 
-      password: String!
-    ): User
     forgetPassword(email: String!): String!
     changePassword(
       email: String!
@@ -59,6 +76,9 @@ const typeDefs = gql`
       newpassword: String!
     ): User!
     logout(id: String!): User
+  }
+  type Subscription {
+    newMessage(recipientId: ID!): Message!
   }
 `;
 

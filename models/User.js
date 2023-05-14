@@ -26,6 +26,18 @@ const UserSchema = new Schema({
   otp: {
     type: Number,
   },
+  senderId: {
+    type: Number,
+    required: true,
+  },
+  recipientId: {
+    type: Number,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
 });
 
 const User = model("User", UserSchema);
