@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose";
 const chatSchema = new Schema({
   senderId: {
-    type: Number,
+    type: String,
     required: true,
   },
   recipientId: {
-    type: Number,
+    type: String,
     required: true,
   },
   content: {
@@ -15,6 +15,10 @@ const chatSchema = new Schema({
   conversation: {
     type: Schema.Types.ObjectId,
     ref: "Conversation",
+  },
+  createdAt: {
+    type: String,
+    required: true,
   },
 });
 const Chat = model("chatData", chatSchema);

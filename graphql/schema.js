@@ -1,7 +1,7 @@
 import { gql } from "apollo-server";
 const typeDefs = gql`
   type Message {
-    id: ID!
+    _id: ID!
     content: String!
     senderId: ID!
     recipientId: ID!
@@ -9,9 +9,9 @@ const typeDefs = gql`
   }
 
   type Conversation {
-    id: ID!
-    participantIds: [ID!]!
-    messages: [Message!]!
+    _id: ID!
+    participants: [ID!]!
+    messages: [Message]
   }
   type Query {
     users(id: String!): [User]
@@ -58,12 +58,13 @@ const typeDefs = gql`
       password: String!
     ): User!
     sendMessage(
-      senderId: ID!
+      senderId: String!
       recipientId: ID!
       content: String!
-      conversationID: ID!
+      conversationId: ID!
     ): Message!
     createConversation(participantIds: [ID!]!): Conversation!
+
     verifyOtp(otp: Int!, email: String!): User!
     update(id: String!, firstName: String!, lastName: String!): User!
     deleteData(id: String!): User!

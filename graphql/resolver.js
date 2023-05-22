@@ -10,6 +10,7 @@ import GoldSilver from "../models/GoldSilver.js";
 import Chat from "../models/Chat.js";
 import { PubSub } from "graphql-subscriptions";
 import Conversation from "../models/Conversation.js";
+
 const pubsub = new PubSub();
 connectDB();
 // Call the connectDB function to connect to MongoDB
@@ -17,7 +18,7 @@ connectDB();
 const resolvers = {
   Query: {
     users: async (_, { id }) => {
-      const user = await User.findById(id); //findById means to find data bassess of id
+      const user = await User.findById(id).exec(); //findById means to find data bassess of id
       console.log(user);
 
       if (!user) {
@@ -31,7 +32,7 @@ const resolvers = {
     },
 
     user: async (_, { id }) => {
-      const user = await User.findOne({ id }); //findOne means to find data  in the  basess of  any propertiies(like id,email);
+      const user = await User.findOne({ id }).exec(); //findOne means to find data  in the  basess of  any propertiies(like id,email);
       console.log(user);
 
       if (!user) {
@@ -59,7 +60,7 @@ const resolvers = {
         silverGram: goldSilvers.silverGramPrice,
       });
       await newGoldSilver.save();
-      const goldSilverList = await GoldSilver.find();
+      const goldSilverList = await GoldSilver.find().exec();
       return goldSilverList;
     },
 
@@ -73,7 +74,7 @@ const resolvers = {
 
   Mutation: {
     signUp: async (_, { firstName, lastName, email, password, otp }) => {
-      const user = await User.findOne({ email: email });
+      const user = await User.findOne({ email: email }).exec();
       console.log(user);
       if (user) {
         throw new Error("user already exist please login");
@@ -111,7 +112,7 @@ const resolvers = {
     },
 
     verifyOtp: async (_, { email, otp }) => {
-      const user = await User.findOne({ email, otp });
+      const user = await User.findOne({ email, otp }).exec();
       if (!user) {
         throw new Error("Make sure email and otp is correct");
       }
@@ -121,9 +122,9 @@ const resolvers = {
     },
 
     login: async (_, { email, password }) => {
-      const user = await User.findOne({ email: email }).select(
-        "password email"
-      );
+      const user = await User.findOne({ email: email })
+        .select("password email")
+        .exec();
       console.log(user);
 
       if (!user) {
@@ -145,7 +146,7 @@ const resolvers = {
     },
 
     forgetPassword: async (_, { email }) => {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).exec();
       if (!user) {
         throw new Error("account counldn't be found");
       }
@@ -169,7 +170,7 @@ const resolvers = {
       return "your opt has gone in your mail";
     },
     changePassword: async (_, { email, currentpassword, newpassword }) => {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).exec();
       if (!user) {
         throw new Error("invalid email");
       }
@@ -187,7 +188,7 @@ const resolvers = {
     },
 
     logout: async (_, { id }) => {
-      const user = await User.findById(id);
+      const user = await User.findById(id).exec();
       console.log(user);
       if (!user) {
         throw new Error("User not found");
@@ -202,7 +203,7 @@ const resolvers = {
     },
 
     update: async (_, { id, firstName, lastName }) => {
-      const user = await User.findById(id);
+      const user = await User.findById(id).exec();
       console.log(user);
       if (!user) {
         throw new Error("user not found");
@@ -220,7 +221,7 @@ const resolvers = {
     },
 
     deleteData: async (_, { id }) => {
-      const user = await User.findById(id);
+      const user = await User.findById(id).exec();
       console.log(user);
       if (!user) {
         throw new Error("user not found");
@@ -228,7 +229,9 @@ const resolvers = {
       if (!user.isLoggedIn) {
         throw new Error("user not loggedin");
       }
-      const deleteUser = await User.deleteOne({ _id: new Types.ObjectId(id) });
+      const deleteUser = await User.deleteOne({
+        _id: new Types.ObjectId(id),
+      }).exec();
       console.log(deleteUser);
       return `User ${user.firstName} ${user.lastName} deleted successfully`;
     },
@@ -236,7 +239,9 @@ const resolvers = {
       _,
       { senderId, recipientId, content, conversationId }
     ) => {
-      const conversation = await Conversation.findById(conversationId);
+      const conversation = await Conversation.findById({
+        _id: conversationId,
+      }).exec();
       console.log(conversation);
       if (!conversation) {
         throw new Error("Conversation must exist");
@@ -259,6 +264,7 @@ const resolvers = {
         messages: [],
       });
       const conversation = await conversationInstance.save();
+      console.log(conversation);
       return conversation;
     },
   },
