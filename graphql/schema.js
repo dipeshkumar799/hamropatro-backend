@@ -13,6 +13,11 @@ const typeDefs = gql`
     participants: [ID!]!
     messages: [Message]
   }
+  type ConversionResult {
+    year: Int!
+    month: Int!
+    day: Int!
+  }
   type Query {
     users(id: String!): [User]
     user(firstName: String!): User!
@@ -20,6 +25,8 @@ const typeDefs = gql`
     getForexs: [Forex!]!
     conversations(userId: ID!): [Conversation!]!
     goldSilver: [GoldSilver!]
+    convertToBS(year: Int!, month: Int!, day: Int!): ConversionResult!
+    convertToAD(year: Int!, month: Int!, day: Int!): ConversionResult!
   }
 
   type User {

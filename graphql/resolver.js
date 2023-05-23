@@ -10,6 +10,7 @@ import GoldSilver from "../models/GoldSilver.js";
 import Chat from "../models/Chat.js";
 import { PubSub } from "graphql-subscriptions";
 import Conversation from "../models/Conversation.js";
+import { ad2bs, bs2ad } from "ad-bs-converter";
 
 const pubsub = new PubSub();
 connectDB();
@@ -69,6 +70,26 @@ const resolvers = {
         id: conversationId,
       }).exec();
       return conversation.messages;
+    },
+    convertToBS: (_, { year, month, day }) => {
+      const formattedDate = `${year}/${month}/${day}`;
+      const convertedDate = ad2bs(formattedDate);
+
+      return {
+        year: convertedDate.en.year,
+        month: convertedDate.en.month,
+        day: convertedDate.en.day,
+      };
+    },
+    convertToAD: (_, { year, month, day }) => {
+      const formattedDate = `${year}/${month}/${day}`;
+      const convertedDate = bs2ad(formattedDate);
+
+      return {
+        year: convertedDate.year,
+        month: convertedDate.month,
+        day: convertedDate.day,
+      };
     },
   },
 
