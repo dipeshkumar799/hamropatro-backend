@@ -1,11 +1,35 @@
 import { gql } from "apollo-server";
 const typeDefs = gql`
+  scalar Upload
+  type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+  }
+  enum Status {
+    PENDING
+    COMPLETED
+  }
+
+  enum ColorPalette {
+    RED
+    GREEN
+    BLUE
+  }
+
+  type Attachment {
+    id: ID!
+    url: String!
+  }
+
+  type Note {
+    id: ID!
+    attachments: [String!]
+    timestamp: Int!
+    createdAt: String!
+  }
   type Message {
     _id: ID!
-    content: String!
-    senderId: ID!
-    recipientId: ID!
-    createdAt: String!
   }
 
   type Conversation {
@@ -27,6 +51,8 @@ const typeDefs = gql`
     goldSilver: [GoldSilver!]
     convertToBS(year: Int!, month: Int!, day: Int!): ConversionResult!
     convertToAD(year: Int!, month: Int!, day: Int!): ConversionResult!
+    notes: [Note]
+    noteById(id: ID!): Note
   }
 
   type User {
@@ -71,7 +97,10 @@ const typeDefs = gql`
       conversationId: ID!
     ): Message!
     createConversation(participantIds: [ID!]!): Conversation!
-
+    createNote(title: String!, content: String!): Note!
+    uploadFiles(files: [Upload!]!): [File!]!
+    updateNote(id: ID!, title: String!, content: String!): Note!
+    deleteNote(id: ID!): ID!
     verifyOtp(otp: Int!, email: String!): User!
     update(id: String!, firstName: String!, lastName: String!): User!
     deleteData(id: String!): User!

@@ -11,6 +11,7 @@ import Chat from "../models/Chat.js";
 import { PubSub } from "graphql-subscriptions";
 import Conversation from "../models/Conversation.js";
 import { ad2bs, bs2ad } from "ad-bs-converter";
+import processFiles from "../utils/multer.js";
 
 const pubsub = new PubSub();
 connectDB();
@@ -91,9 +92,20 @@ const resolvers = {
         day: convertedDate.day,
       };
     },
+    notes: () => notes,
+    noteById: (_, { id }) => notes.find((note) => note.id === id),
   },
-
   Mutation: {
+    uploadFiles: async (_, { files }) => {
+      try {
+        // Process the uploaded files
+        const response = await processFiles(files);
+        return response;
+      } catch (error) {
+        throw new Error("File upload failed");
+      }
+    },
+
     signUp: async (_, { firstName, lastName, email, password, otp }) => {
       const user = await User.findOne({ email: email }).exec();
       console.log(user);
@@ -236,7 +248,7 @@ const resolvers = {
       const updateUser = await User.updateOne(
         { _id: new Types.ObjectId(id) },
         { firstName, lastName }
-      );
+      ).exec();
       console.log(updateUser);
       return { ...user, firstName, lastName };
     },
