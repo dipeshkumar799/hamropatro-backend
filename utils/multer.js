@@ -15,6 +15,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const processFiles = (files) => {
+  ``;
   return new Promise((resolve, reject) => {
     upload.array("files")(files, {}, function (error) {
       if (error) {

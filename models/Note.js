@@ -1,14 +1,18 @@
 import { Schema, model } from "mongoose";
+import dayjs from "dayjs";
 const noteSchema = new Schema({
   title: String,
   content: String,
-  attachements: [String],
-  timestamp: Number,
+  // attachements: [String],
+  timestamp: {
+    type: Number,
+    default: dayjs().valueOf(),
+  },
   status: {
     enum: ["pending", "completed"],
     type: String,
   },
-  colorPallets: {
+  colorPalatte: {
     enum: ["red", "green", "blue"],
     type: String,
   },

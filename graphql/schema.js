@@ -21,13 +21,15 @@ const typeDefs = gql`
     id: ID!
     url: String!
   }
-
   type Note {
     id: ID!
-    attachments: [String!]
-    timestamp: Int!
-    createdAt: String!
+    title: String!
+    content: String!
+    timestamp: Float!
+    status: String!
+    colorPalatte: String!
   }
+
   type Message {
     _id: ID!
   }
@@ -51,8 +53,8 @@ const typeDefs = gql`
     goldSilver: [GoldSilver!]
     convertToBS(year: Int!, month: Int!, day: Int!): ConversionResult!
     convertToAD(year: Int!, month: Int!, day: Int!): ConversionResult!
-    notes: [Note]
-    noteById(id: ID!): Note
+    notes: [Note!]!
+    note(_id: ID!): Note!
   }
 
   type User {
@@ -97,10 +99,15 @@ const typeDefs = gql`
       conversationId: ID!
     ): Message!
     createConversation(participantIds: [ID!]!): Conversation!
-    createNote(title: String!, content: String!): Note!
+    createNote(
+      title: String!
+      content: String!
+      status: String!
+      colorPalatte: String!
+    ): Note
     uploadFiles(files: [Upload!]!): [File!]!
-    updateNote(id: ID!, title: String!, content: String!): Note!
-    deleteNote(id: ID!): ID!
+    updateNote(_id: ID!, title: String!, content: String!): Note!
+    deleteNote(_id: ID!): ID!
     verifyOtp(otp: Int!, email: String!): User!
     update(id: String!, firstName: String!, lastName: String!): User!
     deleteData(id: String!): User!

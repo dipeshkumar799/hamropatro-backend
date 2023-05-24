@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt"; //to hash the password
+import bcrypt from "bcrypt"; // to hash the password
 import User from "../models/User.js";
 import newOTP from "otp-generators";
 import sendEmail from "../utils/email.js";
@@ -12,6 +12,7 @@ import { PubSub } from "graphql-subscriptions";
 import Conversation from "../models/Conversation.js";
 import { ad2bs, bs2ad } from "ad-bs-converter";
 import processFiles from "../utils/multer.js";
+import Note from "../models/Note.js";
 
 const pubsub = new PubSub();
 connectDB();
@@ -20,8 +21,7 @@ connectDB();
 const resolvers = {
   Query: {
     users: async (_, { id }) => {
-      const user = await User.findById(id).exec(); //findById means to find data bassess of id
-      console.log(user);
+      const user = await User.findById(id).exec(); //findById means to find data-bassess of id
 
       if (!user) {
         throw new Error("user  not found");
@@ -92,8 +92,14 @@ const resolvers = {
         day: convertedDate.day,
       };
     },
-    notes: () => notes,
-    noteById: (_, { id }) => notes.find((note) => note.id === id),
+    notes: async () => {
+      const getAllNotes = await Note.find().exec();
+      return getAllNotes;
+    },
+    note: async (_, { _id }) => {
+      const getSingleNote = await Note.findById({ _id }).exec();
+      return getSingleNote;
+    },
   },
   Mutation: {
     uploadFiles: async (_, { files }) => {
@@ -255,7 +261,7 @@ const resolvers = {
 
     deleteData: async (_, { id }) => {
       const user = await User.findById(id).exec();
-      console.log(user);
+
       if (!user) {
         throw new Error("user not found");
       }
@@ -265,7 +271,7 @@ const resolvers = {
       const deleteUser = await User.deleteOne({
         _id: new Types.ObjectId(id),
       }).exec();
-      console.log(deleteUser);
+
       return `User ${user.firstName} ${user.lastName} deleted successfully`;
     },
     sendMessage: async (
@@ -275,7 +281,7 @@ const resolvers = {
       const conversation = await Conversation.findById({
         _id: conversationId,
       }).exec();
-      console.log(conversation);
+
       if (!conversation) {
         throw new Error("Conversation must exist");
       }
@@ -297,8 +303,47 @@ const resolvers = {
         messages: [],
       });
       const conversation = await conversationInstance.save();
-      console.log(conversation);
+
       return conversation;
+    },
+    createNote: async (_, { title, content, status, colorPalatte }) => {
+      try {
+        const noteInstance = await Note.create({
+          title,
+          content,
+          status,
+          colorPalatte,
+        });
+
+        const newNote = await noteInstance.save();
+        return newNote;
+      } catch (error) {
+        console.log(error);
+        throw new Error("Failed to create note");
+      }
+    },
+    // New resolver for deleting a note
+    deleteNote: async (_, { _id }) => {
+      const deletedNote = await Note.findById(_id).exec();
+      console.log(deletedNote);
+      if (!deletedNote) {
+        throw new Error("Note not found"); // Throw an error if the note was not found
+      }
+      const Notedelete = await Note.deleteOne({ _id }).exec();
+      console.log(Notedelete);
+      return Notedelete;
+    },
+    updateNote: async (_, { _id, title, content }) => {
+      const noteInstance = await Note.findById({ _id }).exec();
+      if (!noteInstance) {
+        throw new Error("ID is not found");
+      }
+      const updateNote = await Note.updateOne(
+        { _id },
+        { title, content }
+      ).exec();
+
+      return { ...noteInstance };
     },
   },
 
