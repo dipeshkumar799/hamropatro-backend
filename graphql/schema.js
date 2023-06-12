@@ -29,6 +29,11 @@ const typeDefs = gql`
     status: String!
     colorPalatte: String!
   }
+  type Billionaries {
+    name: String!
+    country: String!
+    countryOfCitizenship: String!
+  }
 
   type Message {
     _id: ID!
@@ -44,6 +49,12 @@ const typeDefs = gql`
     month: Int!
     day: Int!
   }
+  type Event {
+    id: ID!
+    title: String!
+    description: String
+    date: String!
+  }
   type Query {
     users(id: String!): [User]
     user(firstName: String!): User!
@@ -55,6 +66,8 @@ const typeDefs = gql`
     convertToAD(year: Int!, month: Int!, day: Int!): ConversionResult!
     notes: [Note!]!
     note(_id: ID!): Note!
+    getBillionaries: [Billionaries!]
+    events: [Event!]
   }
 
   type User {
@@ -92,6 +105,11 @@ const typeDefs = gql`
       email: String!
       password: String!
     ): User!
+    createBillionaire(
+      name: String!
+      country: String!
+      countryOfCitizenship: String!
+    ): [Billionaries!]
     sendMessage(
       senderId: String!
       recipientId: ID!
@@ -99,12 +117,14 @@ const typeDefs = gql`
       conversationId: ID!
     ): Message!
     createConversation(participantIds: [ID!]!): Conversation!
+
     createNote(
       title: String!
       content: String!
       status: String!
       colorPalatte: String!
-    ): Note
+    ): Note!
+    getBillionaries: [Billionaries!]!
     uploadFiles(files: [Upload!]!): [File!]!
     updateNote(_id: ID!, title: String!, content: String!): Note!
     deleteNote(_id: ID!): ID!
@@ -112,7 +132,6 @@ const typeDefs = gql`
     update(id: String!, firstName: String!, lastName: String!): User!
     deleteData(id: String!): User!
     login(email: String!, password: String!): User
-
     forgetPassword(email: String!): String!
     changePassword(
       email: String!
@@ -120,6 +139,7 @@ const typeDefs = gql`
       newpassword: String!
     ): User!
     logout(id: String!): User
+    createEvent(title: String!, description: String, date: String!): Event
   }
   type Subscription {
     newMessage(recipientId: ID!): Message!

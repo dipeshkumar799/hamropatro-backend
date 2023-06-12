@@ -13,6 +13,9 @@ import Conversation from "../models/Conversation.js";
 import { ad2bs, bs2ad } from "ad-bs-converter";
 import processFiles from "../utils/multer.js";
 import Note from "../models/Note.js";
+import getBillionarie from "../billioniries/billioniries.js";
+import Billion from "../models/Billionar.js";
+import Event from "../models/Event.js";
 
 const pubsub = new PubSub();
 connectDB();
@@ -100,7 +103,23 @@ const resolvers = {
       const getSingleNote = await Note.findById({ _id }).exec();
       return getSingleNote;
     },
+    getBillionaries: async () => {
+      const getBillionarieAll = await getBillionarie();
+      const billionaires = getBillionarieAll.map((billionaire) => {
+        return {
+          name: billionaire.person.name,
+          country: billionaire.country,
+          countryOfCitizenship: billionaire.countryOfCitizenship,
+        };
+      });
+      return await Billion.insertMany(billionaires);
+    },
+    events: async () => {
+      const evNt = await Event.find();
+      return evNt;
+    },
   },
+
   Mutation: {
     uploadFiles: async (_, { files }) => {
       try {
@@ -344,6 +363,20 @@ const resolvers = {
       ).exec();
 
       return { ...noteInstance };
+    },
+    createBillionaire: async (_, { name, country, countryOfCitizen }) => {
+      //   const Billionariess = await Billiondata.filter();
+      const billionaire = await Billion.create({
+        name,
+        country,
+        countryOfCitizen,
+      });
+
+      return await billionaire.save();
+    },
+    createEvent: (_, { title, description, date }) => {
+      const event = new Event({ title, description, date });
+      return event.save();
     },
   },
 
